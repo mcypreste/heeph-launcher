@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Heeph Client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="loading-inner">
+    <img class="loading-logo" src="assets/logo_108.png" alt="HEEPH"/>
+    <div class="loading-title">HEEPH</div>
+    <div class="loading-text">loading<span class="loading-dots" aria-hidden="true"><span class="dot d1">.</span><span class="dot d2">.</span><span class="dot d3">.</span></span></div>
+  </div>
+</div>
+
+<div class="first-run" id="first-run" style="display:none">
+  <div class="first-run-inner">
+    <img class="first-run-logo" src="assets/logo_108.png" alt="HEEPH"/>
+    <div class="first-run-title">WELCOME</div>
+    <div class="first-run-sub">Add an account to start playing</div>
+    <div class="first-run-actions">
+      <button class="first-run-btn primary" id="first-run-add-microsoft" type="button">Add Microsoft</button>
+      <button class="first-run-btn" id="first-run-add-username" type="button">Username</button>
+    </div>
+  </div>
+</div>
+
+<div class="outer-frame app-hidden" id="app-root">
+
+  <!-- ══ TITLE BAR ══════════════════════════════════ -->
+  <div class="titlebar">
+    <div class="tb-left">
+      <div class="logo-wrap">
+        <img class="logo-img" src="assets/logo_108.png" alt="HEEPH" />
+      </div>
+      <span class="tb-title"><span class="tb-bold">HEEPH</span></span>
+    </div>
+
+    <div class="tb-center">
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="home">HOME</button>
+        <button class="tab-btn" data-tab="skins">SKINS</button>
+        <button class="tab-btn" data-tab="menu">SETTINGS</button>
+      </nav>
+    </div>
+
+    <div class="tb-account" id="tb-account">
+      <div class="account-avatar" aria-hidden="true">
+        <img class="account-skin" id="account-skin" alt="" />
+        <span class="av-eye left"></span>
+        <span class="av-eye right"></span>
+        <span class="av-mouth"></span>
+      </div>
+      <div class="account-meta">
+        <span class="account-name" id="account-name">Player</span>
+        <span class="account-label">ACCOUNT</span>
+      </div>
+    </div>
+
+    <div class="tb-right">
+      <button class="wc wc-min"   id="wc-min">─</button>
+      <button class="wc wc-close" id="wc-close">✕</button>
+    </div>
+  </div>
+
+  <aside class="account-drawer" id="account-drawer">
+    <div class="account-drawer-header">
+      <span>ACCOUNT</span>
+      <button class="account-drawer-close" id="account-drawer-close">✕</button>
+    </div>
+    <div class="account-list" id="account-list"></div>
+    <div class="account-drawer-actions">
+      <button class="account-option" id="account-add-microsoft">Add Microsoft</button>
+      <button class="account-option" id="account-username">Username</button>
+    </div>
+  </aside>
+  <div class="account-drawer-backdrop" id="account-drawer-backdrop"></div>
+
+  <div class="ver-modal" id="ver-modal" style="display:none">
+    <div class="ver-modal-card">
+      <div class="ver-modal-top">
+        <div class="ver-modal-title">Select Version</div>
+        <button class="ver-modal-close" id="ver-modal-close" type="button">✕</button>
+      </div>
+      <div class="ver-modal-list" id="ver-modal-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGES ═══════════════════════════════════════ -->
+  <div class="pages">
+
+    <!-- ─── HOME ──────────────────────────────────── -->
+    <div class="page active" id="page-home">
+      <div class="main-content">
+        <div class="left-panel">
+          <div class="hero-banner">
+            <div class="hero-bg"><canvas id="scene-canvas"></canvas></div>
+            <div class="version-bar">
+              <div class="version-select-wrap">
+                <select id="ver-select" class="version-select">
+                  <option value="">Loading...</option>
+                </select>
+                <span class="ver-arrow">▼</span>
+                <div class="ver-menu" id="ver-menu" style="display:none"></div>
+              </div>
+            </div>
+            <div class="hero-center">
+              <button class="start-btn" id="start-btn">
+                <span class="start-label">START GAME</span>
+                <span class="start-sub" id="start-sub">◆ Heeph 1.21.11 | Fabric</span>
+              </button>
+            </div>
+          </div>
+          <div class="notes-panel" id="news-panel">
+            <div class="notes-body" id="news-content" spellcheck="false"></div>
+          </div>
+        </div>
+        <div class="right-panel">
+          <div class="ad-slot">
+            <button class="ad-card" id="ad-mohud" type="button" aria-label="Mohud Ad">
+              <img class="ad-img" src="assets/mohud_anuncio-1x.png" alt="Mohud" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cosmetics-modal" id="cosmetics-modal" style="display:none;pointer-events:none">
+      <div class="cosmetics-card">
+        <div class="cosmetics-layout">
+          <aside class="cosmetics-side">
+            <div class="cosmetics-side-title">Inventory</div>
+            <div class="cosmetics-nav">
+              <button class="cosmetics-nav-item" id="cosmetics-nav-all" type="button">
+                <span class="cosmetics-nav-label">All Cosmetics</span>
+                <span class="cosmetics-nav-count" id="cosmetics-count-all">0</span>
+              </button>
+              <button class="cosmetics-nav-item" id="cosmetics-nav-capes" type="button">
+                <span class="cosmetics-nav-label">Capes</span>
+                <span class="cosmetics-nav-count" id="cosmetics-count-capes">0</span>
+              </button>
+              <button class="cosmetics-nav-item" id="cosmetics-nav-wings" type="button">
+                <span class="cosmetics-nav-label">Wings</span>
+                <span class="cosmetics-nav-count" id="cosmetics-count-wings">0</span>
+              </button>
+            </div>
+            <div class="cosmetics-side-bottom">
+              <button class="cosmetics-get" id="cosmetics-get" type="button">
+                STORE
+              </button>
+            </div>
+          </aside>
+
+          <main class="cosmetics-main">
+            <div class="cosmetics-main-top">
+              <div class="cosmetics-main-title" id="cosmetics-main-title">Wings</div>
+            </div>
+            <div class="cosmetics-empty" id="cosmetics-empty">No cosmetics in this category.</div>
+            <div class="cosmetics-grid" id="cosmetics-list"></div>
+          </main>
+
+          <section class="cosmetics-preview">
+            <div class="cosmetics-preview-top">
+              <div class="cosmetics-preview-label">PREVIEW</div>
+              <button class="cosmetics-close" id="cosmetics-close" type="button">✕</button>
+            </div>
+            <div class="cosmetics-preview-body">
+              <div class="cosmetics-preview-canvas-wrap" id="cosmetics-preview-canvas-wrap">
+                <img id="cosmetics-wing-bg" class="cosmetics-wing-bg" src="" alt="" draggable="false" />
+                <canvas id="cosmetics-preview-canvas"></canvas>
+              </div>
+              <div class="cosmetics-preview-hint" id="cosmetics-preview-hint">Selecione um cosmético</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-menu">
+      <div class="settings-shell">
+        <aside class="settings-sidebar">
+          <div class="settings-search">
+            <div class="settings-search-icon">⌕</div>
+            <input class="settings-search-input" id="settings-search" type="text" placeholder="Search settings..." />
+          </div>
+
+          <div class="settings-nav">
+            <button class="settings-nav-item active" data-settings-tab="game"><span class="settings-nav-ico" aria-hidden="true">🎮</span><span>Game</span></button>
+            <button class="settings-nav-item" data-settings-tab="general"><span class="settings-nav-ico" aria-hidden="true">⚙</span><span>General</span></button>
+            <button class="settings-nav-item" data-settings-tab="account"><span class="settings-nav-ico" aria-hidden="true">👤</span><span>Account</span></button>
+            <button class="settings-nav-item" data-settings-tab="storage"><span class="settings-nav-ico" aria-hidden="true">💾</span><span>Storage</span></button>
+            <button class="settings-nav-item" data-settings-tab="notifications"><span class="settings-nav-ico" aria-hidden="true">🔔</span><span>Notifications</span></button>
+          </div>
+        </aside>
+
+        <section class="settings-content">
+          <div class="settings-content-top">
+            <div class="settings-content-title" id="settings-title">Game Settings</div>
+            <button class="settings-close" id="settings-close" type="button">✕</button>
+          </div>
+
+          <div class="settings-panels">
+            <div class="settings-panel is-active" id="settings-panel-game">
+              <div class="settings-card" data-setting-label="RAM">
+                <div class="settings-card-title">RAM Memory</div>
+                <div class="settings-card-sub">Choose how much RAM the launcher will allocate to Minecraft.</div>
+                <div class="menu-ram-row">
+                  <label class="menu-ram-label">Allocated RAM</label>
+                  <strong class="menu-ram-value"><span id="menu-ram-label">2048</span> MB</strong>
+                </div>
+                <input type="range" id="menu-ram" min="512" max="8192" step="512" value="2048"/>
+                <div class="range-hints"><span>512 MB</span><span id="menu-ram-max">8192 MB</span></div>
+                <div class="menu-actions">
+                  <button class="btn-save" id="menu-ram-save">Save RAM</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel" id="settings-panel-general">
+              <div class="settings-card" data-setting-label="Hardware Acceleration">
+                <div class="settings-card-top">
+                  <div>
+                    <div class="settings-card-title">Hardware Acceleration</div>
+                    <div class="settings-card-sub">Use your GPU to render the launcher. Requires a restart.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="set-hw-accel" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-card" data-setting-label="Exit to Tray">
+                <div class="settings-card-top">
+                  <div>
+                    <div class="settings-card-title">Exit to Tray</div>
+                    <div class="settings-card-sub">Keep the launcher running in the tray when you close the window.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="set-exit-to-tray" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-card" data-setting-label="Low-end PC Mode">
+                <div class="settings-card-top">
+                  <div>
+                    <div class="settings-card-title">Low-end PC Mode</div>
+                    <div class="settings-card-sub">Reduce animations and visual effects for better performance.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="set-low-end" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-card" data-setting-label="Language">
+                <div class="settings-card-title">Language</div>
+                <div class="settings-card-sub">Choose the launcher language. Auto uses your system locale.</div>
+                <div class="settings-field">
+                  <label class="settings-field-label">Language</label>
+                  <select class="settings-field-input" id="set-language">
+                    <option value="auto">Auto (System)</option>
+                    <option value="en">English</option>
+                    <option value="pt-BR">Português (Brasil)</option>
+                  </select>
+                </div>
+                <div class="settings-btn-row">
+                  <button class="settings-btn" id="set-language-save" type="button">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel" id="settings-panel-account">
+              <div class="settings-card" data-setting-label="Microsoft">
+                <div class="settings-card-title">Microsoft Account</div>
+                <div class="settings-card-sub">Manage your signed-in Microsoft accounts.</div>
+                <div class="settings-btn-row">
+                  <button class="settings-btn" id="set-open-accounts" type="button">Manage Accounts</button>
+                  <button class="settings-btn danger" id="set-ms-logout" type="button">Sign out</button>
+                </div>
+                <div class="settings-hint" id="set-account-status">Not signed in</div>
+              </div>
+            </div>
+
+            <div class="settings-panel" id="settings-panel-storage">
+              <div class="settings-card" data-setting-label="Folders">
+                <div class="settings-card-title">Folders</div>
+                <div class="settings-card-sub">Open folders used by the launcher and Minecraft.</div>
+                <div class="settings-btn-row">
+                  <button class="settings-btn" id="set-open-mc" type="button">Open .minecraft</button>
+                  <button class="settings-btn" id="set-open-data" type="button">Open Launcher Data</button>
+                </div>
+              </div>
+
+              <div class="settings-card" data-setting-label="Cache">
+                <div class="settings-card-title">Cache</div>
+                <div class="settings-card-sub">Clear cached files (downloads, auth cache, temporary files).</div>
+                <div class="settings-btn-row">
+                  <button class="settings-btn danger" id="set-clear-cache" type="button">Clear Cache</button>
+                  <button class="settings-btn danger" id="set-clear-logs" type="button">Clear Logs</button>
+                  <button class="settings-btn" id="set-heeph-repair" type="button">Repair</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel" id="settings-panel-notifications">
+              <div class="settings-card" data-setting-label="Toasts">
+                <div class="settings-card-top">
+                  <div>
+                    <div class="settings-card-title">In-App Notifications</div>
+                    <div class="settings-card-sub">Show toast notifications inside the launcher.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="set-notifications" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ─── SKINS ─────────────────────────────────── -->
+    <div class="page" id="page-skins">
+      <div class="skins-layout">
+
+        <!-- Left: skin preview -->
+        <div class="skins-left">
+          <div class="skin-preview-label">PREVIEW</div>
+          <div class="skin-preview-wrap" id="skin-preview-wrap">
+            <div class="skin-preview-bg"></div>
+            <canvas id="skin-preview-canvas" width="128" height="256"></canvas>
+            <div class="skin-preview-placeholder" id="skin-preview-placeholder">
+              <svg viewBox="0 0 48 80" fill="none" width="40" opacity=".2">
+                <rect x="12" y="0"  width="24" height="24" rx="2" fill="#fff"/>
+                <rect x="8"  y="24" width="32" height="28" rx="2" fill="#fff"/>
+                <rect x="0"  y="24" width="8"  height="28" rx="2" fill="#fff"/>
+                <rect x="40" y="24" width="8"  height="28" rx="2" fill="#fff"/>
+                <rect x="8"  y="52" width="15" height="28" rx="2" fill="#fff"/>
+                <rect x="25" y="52" width="15" height="28" rx="2" fill="#fff"/>
+              </svg>
+              <span class="skin-preview-placeholder-text">Select<br>a skin</span>
+            </div>
+          </div>
+          <div class="skin-preview-name" id="skin-preview-name">No skin</div>
+          <button class="skin-upload-btn" id="skin-upload-btn">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 4l3-3 3 3M1 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Import .png
+          </button>
+          <button class="skin-cosmetics-btn" id="skin-cosmetics-btn" type="button" style="display:none">Cosmetics</button>
+        </div>
+
+        <!-- Right: config + gallery -->
+        <div class="skins-right">
+
+          <div class="official-skin-card" id="official-skin-card" style="display:none">
+            <div class="official-skin-title">OFFICIAL SKIN</div>
+            <div class="official-skin-sub">You're signed in with a Microsoft account. Manage your skin using the official profile.</div>
+            <div class="official-skin-row">
+              <label class="official-skin-label">Model</label>
+              <select class="official-skin-select" id="official-skin-variant">
+                <option value="classic">Classic</option>
+                <option value="slim">Slim</option>
+              </select>
+            </div>
+            <button class="official-skin-btn" id="official-skin-upload" type="button">Choose skin (.png)</button>
+            <button class="official-skin-btn secondary" id="official-skin-reset" type="button">Reset to default</button>
+            <button class="official-skin-btn secondary skin-cosmetics-btn" id="official-cosmetics-btn" type="button" style="display:none">Cosmetics</button>
+            <button class="official-skin-btn secondary" id="official-skin-open" type="button">Open minecraft.net</button>
+          </div>
+
+          <!-- Skins no jogo toggle -->
+          <div class="ely-card">
+            <div class="ely-card-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="1.8"/></svg>
+            </div>
+            <div class="ely-card-info">
+              <div class="ely-card-title">In-Game Skins</div>
+              <div class="ely-card-sub" id="ely-card-sub">Enable Authlib Injector to show your skin in-game</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="ely-toggle"/>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Gallery header -->
+          <div class="skin-gallery-header">
+            <span class="skin-gallery-title">INSTALLED SKINS</span>
+            <span class="skin-gallery-count" id="skin-gallery-count">0</span>
+          </div>
+
+          <!-- Gallery grid -->
+          <div class="skin-gallery" id="skin-gallery"></div>
+          <div class="skin-gallery-empty" id="skin-gallery-empty">
+            <svg width="32" height="32" viewBox="0 0 48 80" fill="none" opacity=".2" style="margin-bottom:8px"><rect x="12" y="0" width="24" height="24" rx="2" fill="#fff"/><rect x="8" y="24" width="32" height="28" rx="2" fill="#fff"/><rect x="0" y="24" width="8" height="28" rx="2" fill="#fff"/><rect x="40" y="24" width="8" height="28" rx="2" fill="#fff"/><rect x="8" y="52" width="15" height="28" rx="2" fill="#fff"/><rect x="25" y="52" width="15" height="28" rx="2" fill="#fff"/></svg>
+            <div>Import a .png file to get started</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MODS ──────────────────────────────────── -->
+    <div class="page" id="page-mods">
+      <div class="mods-layout">
+
+        <!-- Sidebar filters -->
+        <aside class="mods-sidebar">
+          <div class="mods-search-wrap">
+            <input class="mods-search" id="mods-search" type="text" placeholder="Search mods..."/>
+            <button class="mods-search-btn" id="mods-search-btn">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+            </button>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">MC VERSION</span>
+            <select class="filter-select" id="filter-version">
+              <option value="">All</option>
+              <option value="1.21.1">1.21.1</option>
+              <option value="1.20.4">1.20.4</option>
+              <option value="1.20.1">1.20.1</option>
+              <option value="1.19.4">1.19.4</option>
+              <option value="1.18.2">1.18.2</option>
+              <option value="1.16.5">1.16.5</option>
+            </select>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">MOD LOADER</span>
+            <div class="filter-chips" id="filter-loader">
+              <button class="chip active" data-val="">All</button>
+              <button class="chip" data-val="fabric">Fabric</button>
+              <button class="chip" data-val="forge">Forge</button>
+              <button class="chip" data-val="neoforge">NeoForge</button>
+              <button class="chip" data-val="quilt">Quilt</button>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">CATEGORY</span>
+            <div class="filter-chips wrap" id="filter-category">
+              <button class="chip active" data-val="">All</button>
+              <button class="chip" data-val="optimization">⚡ Optimization</button>
+              <button class="chip" data-val="adventure">🗺 Adventure</button>
+              <button class="chip" data-val="magic">✨ Magic</button>
+              <button class="chip" data-val="technology">⚙️ Technology</button>
+              <button class="chip" data-val="utility">🔧 Utility</button>
+              <button class="chip" data-val="decoration">🎨 Decoration</button>
+              <button class="chip" data-val="storage">📦 Storage</button>
+              <button class="chip" data-val="food">🍎 Food</button>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">SORT BY</span>
+            <select class="filter-select" id="filter-sort">
+              <option value="relevance">Relevance</option>
+              <option value="downloads">Most downloaded</option>
+              <option value="follows">Most followed</option>
+              <option value="newest">Newest</option>
+              <option value="updated">Recently updated</option>
+            </select>
+          </div>
+        </aside>
+
+        <!-- Results area -->
+        <div class="mods-main">
+          <div class="mods-topbar">
+            <span class="mods-count" id="mods-count">Loading...</span>
+            <div class="mods-view-toggle">
+              <button class="view-btn active" id="view-grid" title="Grid">
+                <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+              </button>
+              <button class="view-btn" id="view-list" title="List">
+                <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="14" height="2" rx="1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="mods-grid" id="mods-grid"></div>
+
+          <div class="mods-status" id="mods-loading" style="display:none">
+            <div class="spinner"></div><span>Searching mods...</span>
+          </div>
+          <div class="mods-status" id="mods-empty" style="display:none">
+            <svg viewBox="0 0 48 48" fill="none" width="40"><circle cx="24" cy="24" r="20" stroke="#444" stroke-width="2"/><path d="M15 24h18M24 15v18" stroke="#555" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>No mods found</span>
+          </div>
+
+          <div class="mods-pagination" id="mods-pagination" style="display:none">
+            <button class="page-btn" id="page-prev">← Prev</button>
+            <span class="page-info" id="page-info">Page 1</span>
+            <button class="page-btn" id="page-next">Next →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="news-modal-backdrop" id="news-modal-backdrop" style="display:none"></div>
+    <div class="news-modal" id="news-modal" style="display:none">
+      <div class="news-modal-header">
+        <div class="news-modal-title">ALL NEWS</div>
+        <button class="news-modal-close" id="news-modal-close" type="button">✕</button>
+      </div>
+      <div class="news-modal-body" id="news-modal-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MOD DETAIL MODAL ═══════════════════════════ -->
+<div class="modal-overlay" id="mod-modal" style="display:none">
+  <div class="modal-box mod-detail-box">
+    <div class="modal-header">
+      <div class="mod-detail-title">
+        <img class="mod-detail-icon" id="md-icon" src="" alt=""/>
+        <div>
+          <div class="mod-detail-name" id="md-name">—</div>
+          <div class="mod-detail-by" id="md-by">—</div>
+        </div>
+      </div>
+      <button class="modal-close" id="mod-modal-close">✕</button>
+    </div>
+    <div class="modal-body mod-detail-body">
+      <div class="md-stats">
+        <div class="md-stat"><span class="md-stat-icon">⬇</span><strong id="md-downloads">—</strong><span>downloads</span></div>
+        <div class="md-stat"><span class="md-stat-icon">❤</span><strong id="md-followers">—</strong><span>followers</span></div>
+        <div class="md-stat"><span class="md-stat-icon">🔖</span><strong id="md-license">—</strong><span>license</span></div>
+      </div>
+      <p class="md-desc" id="md-desc">—</p>
+      <div class="md-tags" id="md-cats"></div>
+      <div class="md-info-row">
+        <div>
+          <span class="filter-label">MC VERSIONS</span>
+          <div class="md-chips" id="md-versions"></div>
+        </div>
+        <div>
+          <span class="filter-label">LOADERS</span>
+          <div class="md-chips" id="md-loaders"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modrinth" id="md-open-url">🌐 View on Modrinth</button>
+      <button class="btn-cancel"   id="mod-modal-cancel">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ms-modal" style="display:none">
+  <div class="modal-box ms-modal-box">
+    <div class="modal-header">
+      <span>Microsoft Login</span>
+      <button class="modal-close" id="ms-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ms-status" id="ms-status">Waiting for code...</div>
+      <div class="ms-code" id="ms-code">—</div>
+      <div class="ms-hint">Open the link and enter the code above to sign in.</div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="ms-copy">Copy code</button>
+        <button class="btn-save" id="ms-open">Open link</button>
+      </div>
+      <div class="ms-url" id="ms-url">https://microsoft.com/link</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS MODAL ════════════════════════════ -->
+<div class="modal-overlay" id="modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>Jogador Não Original</span>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label>Username</label>
+        <input type="text" id="cfg-username" placeholder="Your username"/>
+        <div class="field-hint">3–16 caracteres, letras/números e "_" (sem espaços)</div>
+      </div>
+      <div id="cfg-skin-group" style="display:none">
+        <span class="cfg-skin-section-label">Skin</span>
+        <div class="cfg-skin-layout">
+          <div class="cfg-skin-preview-wrap">
+            <canvas id="cfg-skin-canvas" width="64" height="128"></canvas>
+            <div class="cfg-skin-preview-name" id="cfg-skin-name">—</div>
+          </div>
+          <div class="cfg-skin-list" id="cfg-skin-list"></div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Custom version</label>
+        <input type="text" id="cfg-custom-ver" placeholder="e.g. 1.21.11-heeph"/>
+      </div>
+      <div class="field-group">
+        <label>Allocated RAM: <strong id="cfg-ram-label">2048</strong> MB</label>
+        <input type="range" id="cfg-ram" min="512" max="8192" step="512" value="2048"/>
+        <div class="range-hints"><span>512 MB</span><span id="cfg-ram-max">8192 MB</span></div>
+      </div>
+      <div class="field-group">
+        <label>Access Token</label>
+        <input type="password" id="cfg-ely-token" placeholder="Paste your token"/>
+      </div>
+      <div class="field-group">
+        <label>UUID</label>
+        <input type="text" id="cfg-ely-uuid" placeholder="e.g. 069a79f4-44e9-4726-a5be-fca90e38aaf5"/>
+      </div>
+      <div class="field-group">
+        <label>Skin server secret</label>
+        <input type="password" id="cfg-skin-server-secret" placeholder="UPLOAD_SECRET"/>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-save" id="cfg-save">Save</button>
+        <button class="btn-cancel" id="cfg-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="assets/three.min.js"></script>
+<script src="assets/skinview3d.bundle.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

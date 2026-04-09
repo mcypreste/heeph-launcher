@@ -1,0 +1,71 @@
+{
+  "name": "heeph-client",
+  "version": "1.0.1",
+  "description": "Heeph Client - Custom Minecraft Launcher",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "cmd /c \"set ELECTRON_RUN_AS_NODE=&& electron .\"",
+    "start:obf": "cmd /c \"set ELECTRON_RUN_AS_NODE=&& electron dist-obf\"",
+    "obfuscate": "node scripts/obfuscate.js",
+    "publish:client": "node scripts/publish-updates.js",
+    "build:win": "npm run obfuscate && electron-builder --win",
+    "build:mac": "npm run obfuscate && electron-builder --mac",
+    "build:linux": "npm run obfuscate && electron-builder --linux"
+  },
+  "dependencies": {
+    "7zip-bin": "^5.2.0",
+    "adm-zip": "^0.5.16",
+    "bytebuffer": "^5.0.1",
+    "electron-updater": "^6.3.0",
+    "node-unrar-js": "^2.0.2",
+    "prismarine-auth": "^2.5.0",
+    "skinview3d": "^3.4.1",
+    "ws": "^8.4.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "javascript-obfuscator": "^4.1.0"
+  },
+  "build": {
+    "appId": "com.heeph.client",
+    "productName": "Heeph Client",
+    "icon": "src/assets/logo_108.png",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "mcypreste",
+        "repo": "heeph-launcher"
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist-obf/**/*",
+      "resources/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/authlib-injector.jar",
+        "to": "authlib-injector.jar"
+      },
+      {
+        "from": "resources/default-skins",
+        "to": "default-skins"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/logo_108.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/logo_108.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "src/assets/logo_108.png"
+    }
+  }
+}

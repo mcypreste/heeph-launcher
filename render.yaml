@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: heeph-skin-server
+    env: docker
+    rootDir: skin-server
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: UPLOAD_SECRET
+        generateValue: true
+      - key: NEWS_WEBHOOK_KEY
+        generateValue: true

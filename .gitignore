@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-obf/
+*.log
+.env
+.DS_Store
+Thumbs.db
+_gh_launcher_updates_repo/
+skin-server/
+updates-vercel/
+admin-panel/
